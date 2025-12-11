@@ -1,0 +1,14 @@
+{
+  "configurations": [
+    {
+      "type": "node",
+      "name": "Debug Server",
+      "request": "launch",
+      "cwd": "${workspaceFolder}/packages/server",
+      "skipFiles": ["<node_internals>/**"],
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "start:dev"],
+      "console": "integratedTerminal"
+    }
+  ]
+}

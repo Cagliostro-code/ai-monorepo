@@ -1,0 +1,13 @@
+{
+	"compilerOptions": {
+		"lib": ["DOM", "DOM.Iterable", "ESNext"],
+		"jsx": "preserve",
+		"strictNullChecks": true,
+		"baseUrl": ".",
+		"paths": {
+			"@/*": ["src/*"]
+		}
+	},
+	"include": ["src", "env.d.ts"], // 编译包含的目录
+	"exclude": ["node_modules", "dist"] // 排除的目录
+}
