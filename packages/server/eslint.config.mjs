@@ -3,7 +3,6 @@ import eslint from '@eslint/js';
 import globals from 'globals';
 import tseslint from 'typescript-eslint';
 import prettierConfig from 'eslint-config-prettier';
-// 移除了 eslint-plugin-prettier 插件的导入
 
 export default tseslint.config(
   {
@@ -11,13 +10,13 @@ export default tseslint.config(
   },
   eslint.configs.recommended,
   ...tseslint.configs.recommendedTypeChecked,
-  prettierConfig, // 使用 eslint-config-prettier 禁用与 Prettier 冲突的规则
+  prettierConfig,
   {
     languageOptions: {
       globals: {
         ...globals.node,
       },
-      sourceType: 'commonjs',
+      sourceType: 'module',
       parserOptions: {
         projectService: true,
         tsconfigRootDir: import.meta.dirname,
@@ -25,7 +24,6 @@ export default tseslint.config(
     },
   },
   {
-    // 移除了 prettier 插件和相关规则
     rules: {
       '@typescript-eslint/no-explicit-any': 'off',
       '@typescript-eslint/no-floating-promises': 'warn',
@@ -37,7 +35,6 @@ export default tseslint.config(
           varsIgnorePattern: '^_',
         },
       ],
-      // 移除了 'prettier/prettier': 'error' 规则
     },
   },
 );

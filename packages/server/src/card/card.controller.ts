@@ -2,11 +2,8 @@ import { Controller, Post, UseInterceptors } from '@nestjs/common';
 import { UploadedFile } from '@nestjs/common';
 import { CardService } from './card.service';
 import { FileInterceptor } from '@nestjs/platform-express';
-import {
-  CharacterCardParseChunksPipe,
-  CharacterCardValidationPipe,
-  PngChunk,
-} from 'src/common/pipe/upload.pipe';
+import { CharacterCardParseChunksPipe, CharacterCardValidationPipe } from './card.pipe';
+import type { ParseFileInfo } from './card.pipe';
 
 @Controller('card')
 export class CardController {
@@ -16,9 +13,8 @@ export class CardController {
   @UseInterceptors(FileInterceptor('file'))
   upload(
     @UploadedFile(new CharacterCardValidationPipe(), new CharacterCardParseChunksPipe())
-    file: PngChunk[],
+    file: ParseFileInfo,
   ): string {
-    console.log(file);
-    return this.cardService.getHello();
+    return this.cardService.save(file.file, file.chunks);
   }
 }
