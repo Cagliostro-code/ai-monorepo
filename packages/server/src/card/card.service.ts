@@ -7,6 +7,7 @@ import path from 'node:path';
 import { CardInfoGroup } from 'src/types/card';
 import { CardException } from 'src/common/response/card.exception';
 import { CommonSuccess } from 'src/common/response/common.response';
+import { CardCustomDataDTO, mapToCardInfo } from './card.dto';
 
 @Injectable()
 export class CardService {
@@ -31,7 +32,6 @@ export class CardService {
     }
     console.log(file, chunks);
     const customData = this.getCardInitData(chunks);
-    console.log(customData, typeof customData);
     if (!customData) {
       return CardException.cardInfoNotFound();
     }
@@ -39,7 +39,7 @@ export class CardService {
     if (typeof customData !== 'object') {
       return CardException.cardInfoCannotBeParsed();
     }
-    this.cardInfo[originalname] = { name: file.originalname, path: filePath };
+    this.cardInfo[originalname] = { name: customData.name };
     const tempPath = this.dataCardDir + '.temp';
 
     fs.writeFileSync(filePath, file.buffer);
@@ -62,6 +62,6 @@ export class CardService {
 
     if (!chunk) return;
 
-    return chunk.data;
+    return mapToCardInfo(chunk.data as unknown as CardCustomDataDTO);
   }
 }
