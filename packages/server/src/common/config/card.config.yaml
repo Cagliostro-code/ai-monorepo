@@ -1,4 +1,4 @@
 address:
   root: 'data'
   card: 'data/card'
-  card-info: 'data/card-info'
+  cardInfo: 'card-info.json'

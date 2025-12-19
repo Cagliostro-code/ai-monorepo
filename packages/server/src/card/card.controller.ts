@@ -14,7 +14,7 @@ export class CardController {
   upload(
     @UploadedFile(new CharacterCardValidationPipe(), new CharacterCardParseChunksPipe())
     file: ParseFileInfo,
-  ): string {
+  ) {
     return this.cardService.save(file.file, file.chunks);
   }
 }

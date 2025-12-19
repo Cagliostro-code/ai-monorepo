@@ -1,5 +1,5 @@
 import { ConfigModule } from '@nestjs/config';
-import configuration from '../config/configuration';
+import configuration from './common/config/configuration';
 
 import { CardModule } from './card/card.module';
 import { Module } from '@nestjs/common';

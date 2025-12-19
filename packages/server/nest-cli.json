@@ -5,8 +5,8 @@
   "compilerOptions": {
     "assets": [
       {
-        "include": "../config/*.yaml",
-        "outDir": "./dist/config"
+        "include": "./common/config/*.yaml",
+        "outDir": "./dist"
       }
     ],
     "deleteOutDir": true
