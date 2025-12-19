@@ -12,17 +12,13 @@ import { CommonSuccess } from 'src/common/response/common.response';
 export class CardService {
   private readonly logger = new Logger(CardService.name);
   private readonly dataCardDir: string;
-  private readonly dataCardInfoDir: string;
+  private readonly dataCardInfoFile: string;
   private cardInfo: CardInfoGroup = {};
 
   constructor(private configService: ConfigService) {
     const cardConfig = this.configService.get('card') as CardConfig;
     this.dataCardDir = path.join(process.cwd(), cardConfig.address.card);
-    this.dataCardInfoDir = path.join(this.dataCardDir, cardConfig.address.cardInfo);
-
-    if (!fs.existsSync(this.dataCardInfoDir)) {
-      fs.writeFileSync(this.dataCardInfoDir, '{}');
-    }
+    this.dataCardInfoFile = path.join(this.dataCardDir, cardConfig.address.cardInfo);
 
     this.cardInfo = this.loadCardInfoFromFile();
   }
@@ -34,16 +30,38 @@ export class CardService {
       return CardException.cardExists();
     }
     console.log(file, chunks);
-    fs.writeFileSync(filePath, file.buffer);
+    const customData = this.getCardInitData(chunks);
+    console.log(customData, typeof customData);
+    if (!customData) {
+      return CardException.cardInfoNotFound();
+    }
+
+    if (typeof customData !== 'object') {
+      return CardException.cardInfoCannotBeParsed();
+    }
     this.cardInfo[originalname] = { name: file.originalname, path: filePath };
+    const tempPath = this.dataCardDir + '.temp';
+
+    fs.writeFileSync(filePath, file.buffer);
+    fs.writeFileSync(tempPath, JSON.stringify(this.cardInfo));
+    fs.renameSync(tempPath, this.dataCardInfoFile);
+
     return new CommonSuccess('保存成功');
   }
 
   loadCardInfoFromFile(): CardInfoGroup {
-    const parsedInfo = JSON.parse(fs.readFileSync(this.dataCardInfoDir, 'utf-8')) as CardInfoGroup;
+    const parsedInfo = JSON.parse(fs.readFileSync(this.dataCardInfoFile, 'utf-8')) as CardInfoGroup;
     if (typeof parsedInfo !== 'object' || parsedInfo === null) {
       throw new Error('异常的角色卡列表信息');
     }
     return parsedInfo;
+  }
+
+  getCardInitData(chunks: PngChunk[]) {
+    const chunk = chunks.find(item => item.type === 'tEXt');
+
+    if (!chunk) return;
+
+    return chunk.data;
   }
 }
