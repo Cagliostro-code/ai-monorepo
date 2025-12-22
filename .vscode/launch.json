@@ -1,6 +1,13 @@
 {
   "configurations": [
     {
+      "command": "npm run dev",
+      "name": "Debug Client",
+      "request": "launch",
+      "type": "node-terminal",
+      "cwd": "${workspaceFolder}/packages/client"
+    },
+    {
       "type": "node",
       "name": "Debug Server",
       "request": "launch",
