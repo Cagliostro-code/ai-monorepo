@@ -12,14 +12,27 @@ import { CardCustomDataDTO, mapToCardInfo } from './card.dto';
 @Injectable()
 export class CardService {
   private readonly logger = new Logger(CardService.name);
+
+  private readonly dataDir: string;
   private readonly dataCardDir: string;
   private readonly dataCardInfoFile: string;
   private cardInfo: CardInfoGroup = {};
 
   constructor(private configService: ConfigService) {
     const cardConfig = this.configService.get('card') as CardConfig;
+    this.dataDir = path.join(process.cwd(), cardConfig.address.root);
     this.dataCardDir = path.join(process.cwd(), cardConfig.address.card);
     this.dataCardInfoFile = path.join(this.dataCardDir, cardConfig.address.cardInfo);
+
+    if (!fs.existsSync(this.dataDir)) {
+      fs.mkdirSync(this.dataDir);
+    }
+    if (!fs.existsSync(this.dataCardDir)) {
+      fs.mkdirSync(this.dataCardDir);
+    }
+    if (!fs.existsSync(this.dataCardInfoFile)) {
+      fs.writeFileSync(this.dataCardInfoFile, '{}');
+    }
 
     this.cardInfo = this.loadCardInfoFromFile();
   }

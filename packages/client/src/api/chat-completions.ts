@@ -1,5 +1,5 @@
 import { request } from './request';
 
-export function getStatus(baseUrl) {
-  return request.get(`${baseUrl}/status`);
+export function checkAndGetModels(customUrl: string) {
+  return request.get(`/models`, { params: { customUrl } });
 }

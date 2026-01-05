@@ -11,6 +11,16 @@ const __dirname = path.dirname(__filename);
 
 // https://vite.dev/config/`
 export default defineConfig({
+	server: {
+		proxy: {
+			"/api": {
+				target: "http://localhost:3000",
+				changeOrigin: true,
+				secure: false,
+				rewrite: (path) => path.replace(/^\/api/, ""),
+			},
+		},
+	},
 	resolve: {
 		alias: {
 			"@": path.resolve(__dirname, "src"), // 例如 @ 指向 src 目录
