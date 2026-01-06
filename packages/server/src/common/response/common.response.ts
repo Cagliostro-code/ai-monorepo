@@ -12,10 +12,10 @@ export class CommonException {
 export class CommonSuccess {
   private readonly success: boolean = true;
   private readonly code: string = '00000';
-  private message: unknown;
+  private message: string;
   private data: any;
 
-  constructor(message: unknown, data?: unknown) {
+  constructor(message: string, data?: unknown) {
     this.message = message;
     this.data = data;
   }

@@ -1,11 +1,16 @@
 import { checkAndGetModels, saveApiKey } from '@/api/link';
-import { Button, Form, Input, message } from 'antd';
+import { ModelItem } from '@/types/model';
+import { CommonResponse } from '@/types/request';
+import { Button, Form, Input, message, Select, SelectProps } from 'antd';
 import { useState } from 'react';
 
 export const LinkConfig = () => {
   const [link, setLink] = useState('');
   const [apiKey, setApiKey] = useState('');
   const [configId, setConfigId] = useState('');
+  const [modelLoading, setModelLoading] = useState(false);
+  const [models, setModels] = useState<SelectProps['options']>([]);
+  const [currentModel, setCurrentModel] = useState('');
   const [messageApi] = message.useMessage();
 
   const handleApiKeyChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -14,13 +19,26 @@ export const LinkConfig = () => {
     saveApiKey(configId, apiKey);
   };
 
+  const handleSelectChange = (value: string) => {
+    console.log('[ value ] >', value);
+    setConfigId(value);
+  };
+
   // 校验 URL 的连接状态
-  const handleCheckStatus = () => {
+  const handleCheckStatus = async () => {
     if (!link.trim()) {
       messageApi.error('请输入正确的');
       return;
     }
-    checkAndGetModels(link);
+    setModelLoading(true);
+    const res = await checkAndGetModels(link);
+    setModelLoading(false);
+    if (res.success) {
+      const modelsRes = res.data as ModelItem[];
+      messageApi.success('连接成功');
+      setModels(modelsRes.map((model: ModelItem) => ({ label: model.id, value: model.id })));
+      console.log('[ models ] >', models);
+    }
   };
 
   return (
@@ -39,7 +57,12 @@ export const LinkConfig = () => {
           <span>不行？在 URL 末尾添加 /v1 试试！</span>
         </Form.Item>
         <Form.Item>
-          <Button htmlType="submit">连 接</Button>
+          <Select style={{ width: 120 }} onChange={handleSelectChange} options={models} />
+        </Form.Item>
+        <Form.Item>
+          <Button htmlType="submit" loading={modelLoading}>
+            连 接
+          </Button>
         </Form.Item>
       </Form>
     </div>

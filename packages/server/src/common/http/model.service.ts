@@ -1,6 +1,7 @@
 import { HttpService } from '@nestjs/axios';
 import { Injectable } from '@nestjs/common';
 import { firstValueFrom } from 'rxjs';
+import { GetModels, ModelItem, ModelItemVO } from 'src/types/model';
 
 @Injectable()
 export class ModelService {
@@ -14,36 +15,14 @@ export class ModelService {
         },
       }),
     );
-    return res.data as GetModelsVO;
+    return res.data as GetModels;
   }
 }
 
-export interface GetModelsVO {
-  data: ModelItemVO[];
-  object: string;
-}
+export function mapModels(data: ModelItem[]): ModelItemVO[] {
+  return data.map(item => {
+    const { id, object, owned_by, root } = item;
 
-export interface ModelItemVO {
-  id: string;
-  object: string;
-  created: number;
-  owned_by: string;
-  root: string;
-  permission: ModelPermission[] | null;
-}
-
-export interface ModelPermission {
-  id: string;
-  object: string;
-  created: number;
-  allow_create_engine: boolean;
-  allow_sampling: boolean;
-  allow_logprobs: boolean;
-  allow_online_finetuning: boolean;
-  allow_offline_finetuning: boolean;
-  allow_view: boolean;
-  allow_edit: boolean;
-  organization: string;
-  group: string | null;
-  is_blocking: boolean;
+    return { id, object, ownedBy: owned_by, root };
+  });
 }
