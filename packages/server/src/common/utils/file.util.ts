@@ -1,5 +1,6 @@
 import { createHash } from 'crypto';
 import fs from 'node:fs';
+
 export function getFileExtension(fileName: string, withDot = false): string {
   if (!fileName.includes('.')) return '';
   return withDot ? `.${fileName.split('.').pop()}` : '';
