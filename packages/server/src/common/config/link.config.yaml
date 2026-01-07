@@ -1,0 +1,4 @@
+address:
+  root: 'data'
+  link: 'data/link'
+  linkInfo: 'link-info.json'

@@ -43,7 +43,6 @@ export class CardService {
     if (fs.existsSync(filePath)) {
       return CardException.cardExists();
     }
-    console.log(file, chunks);
     const customData = this.getCardInitData(chunks);
     if (!customData) {
       return CardException.cardInfoNotFound();
