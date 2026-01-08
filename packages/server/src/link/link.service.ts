@@ -3,10 +3,11 @@ import { ConfigService } from '@nestjs/config';
 import path from 'node:path';
 import fs from 'node:fs';
 import { LinkConfig } from 'src/common/config/configuration';
-import { mapModels, ModelService } from 'src/common/http/model.service';
+import { LinkInfoGroup } from 'src/types/link';
+import { ModelService } from 'src/common/http/model.service';
+import { mapModels } from 'src/common/http/model.service';
 import { CommonSuccess } from 'src/common/response/common.response';
 import { LinkException } from 'src/common/response/link.exception';
-import { LinkInfoGroup } from 'src/types/link';
 import { coverFile } from 'src/common/utils/file.util';
 
 @Injectable()
@@ -46,8 +47,13 @@ export class LinkService {
     return parsedInfo;
   }
 
-  async getModels(customUrl: string, apiKey: string) {
-    const res = await this.modelService.getModels(customUrl, apiKey);
+  async getModels(id: string) {
+    const targetLinkInfo = this.linkInfo[id];
+    if (!targetLinkInfo) {
+      return LinkException.linkInfoNotFound();
+    }
+    const { url, apiKey } = targetLinkInfo;
+    const res = await this.modelService.getModels(url, apiKey);
 
     if (Array.isArray(res.data)) {
       return new CommonSuccess('获取模型列表成功', mapModels(res.data));
@@ -55,21 +61,32 @@ export class LinkService {
     return LinkException.cannotGetModels();
   }
 
-  saveApiKey(id: string, key: string) {
-    console.log(id, key);
+  saveUrl(id: string, url: string) {
     let targetLinkInfo = this.linkInfo[id];
     if (!targetLinkInfo) {
       targetLinkInfo = { id, name: 'Default', url: '', apiKey: '', currentModel: '' };
       this.linkInfo[id] = targetLinkInfo;
     }
-    console.log('[ targetLinkInfo ] >', targetLinkInfo);
+
+    targetLinkInfo.url = url;
+    this.linkInfo[id] = targetLinkInfo;
+
+    coverFile(this.dataLinkInfoFile, JSON.stringify(this.linkInfo, null, 2));
+
+    return new CommonSuccess('保存成功', id);
+  }
+
+  saveApiKey(id: string, key: string) {
+    let targetLinkInfo = this.linkInfo[id];
+    if (!targetLinkInfo) {
+      targetLinkInfo = { id, name: 'Default', url: '', apiKey: '', currentModel: '' };
+      this.linkInfo[id] = targetLinkInfo;
+    }
 
     targetLinkInfo.apiKey = key;
     this.linkInfo[id] = targetLinkInfo;
-    console.log('[ linkInfo ] >', this.linkInfo);
-    console.log('[ linkInfo ] >', JSON.stringify(this.linkInfo));
 
-    coverFile(this.dataLinkInfoFile, JSON.stringify(this.linkInfo));
+    coverFile(this.dataLinkInfoFile, JSON.stringify(this.linkInfo, null, 2));
 
     return new CommonSuccess('保存成功');
   }
