@@ -5,6 +5,7 @@ import './index.css';
 
 // Import the generated route tree
 import { routeTree } from './routeTree.gen';
+import { App } from 'antd';
 // Create a new router instance
 const router = createRouter({ routeTree });
 
@@ -19,7 +20,9 @@ const RootEl = document.getElementById('root');
 if (RootEl) {
   createRoot(RootEl).render(
     // <StrictMode>
-    <RouterProvider router={router} />,
+    <App>
+      <RouterProvider router={router} />
+    </App>,
     // </StrictMode>,
   );
 }

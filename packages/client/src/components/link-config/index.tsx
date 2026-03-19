@@ -1,8 +1,9 @@
-import { checkAndGetModels, saveApiKey, saveUrl } from '@/api/link';
+import { checkAndGetModels, getConfig, saveApiKey, saveCurrentModel, saveUrl } from '@/api/link';
 import type { ModelItem } from '@/types/model';
-import { Button, Form, Input, message, Select } from 'antd';
+import { LoadingOutlined } from '@ant-design/icons';
+import { App, Button, Form, Input, message, Select } from 'antd';
 import type { SelectProps } from 'antd';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 export const LinkConfig = () => {
   const [link, setLink] = useState('');
@@ -11,7 +12,28 @@ export const LinkConfig = () => {
   const [modelLoading, setModelLoading] = useState(false);
   const [models, setModels] = useState<SelectProps['options']>([]);
   const [currentModel, setCurrentModel] = useState('');
-  const [messageApi] = message.useMessage();
+  const [saveModelLoading, setSaveModelLoading] = useState(false);
+  const { message } = App.useApp();
+
+  useEffect(() => {
+    getConfig().then(res => {
+      if (res.success) {
+        const data = res.data;
+        console.log('[ data ] >', data);
+        if (Array.isArray(data) && data.length > 0) {
+          const firstItem = data[0];
+          console.log(firstItem);
+          const { id, url, apiKey, currentModel } = firstItem;
+          setConfigId(id);
+          setLink(url);
+          setApiKey(apiKey);
+          setCurrentModel(currentModel);
+          console.log(url, link);
+          handleCheckStatus();
+        }
+      }
+    });
+  }, []);
 
   const handleUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setLink(e.target.value);
@@ -25,15 +47,20 @@ export const LinkConfig = () => {
     saveApiKey(configId, apiKey);
   };
 
-  const handleSelectChange = (value: string) => {
+  const handleSelectChange = async (value: string) => {
     console.log('[ value ] >', value);
-    setConfigId(value);
+    setCurrentModel(value);
+
+    setSaveModelLoading(true);
+    await saveCurrentModel(configId, currentModel);
+    setSaveModelLoading(false);
   };
 
   // 校验 URL 的连接状态
   const handleCheckStatus = async () => {
+    console.log(link);
     if (!link.trim()) {
-      messageApi.error('请输入正确的');
+      message.error('请输入正确的 URL');
       return;
     }
     setModelLoading(true);
@@ -41,7 +68,7 @@ export const LinkConfig = () => {
     setModelLoading(false);
     if (res.success) {
       const modelsRes = res.data as ModelItem[];
-      messageApi.success('连接成功');
+      message.success('连接成功');
       setModels(modelsRes.map((model: ModelItem) => ({ label: model.id, value: model.id })));
     }
   };
@@ -63,6 +90,7 @@ export const LinkConfig = () => {
         </Form.Item>
         <Form.Item>
           <Select style={{ width: 120 }} onChange={handleSelectChange} options={models} />
+          {saveModelLoading && <LoadingOutlined />}
         </Form.Item>
         <Form.Item>
           <Button htmlType="submit" loading={modelLoading}>

@@ -1,15 +1,24 @@
-import { Body, Controller, Put, Get, Query } from '@nestjs/common';
-import { LinkService } from './link.service';
-import { SaveApiKeyDTO } from './link.dto';
+import { Body, Controller, Get, Put, Query } from '@nestjs/common';
 import { CommonException } from 'src/common/response/common.response';
+import { SaveApiKeyDTO } from './link.dto';
+import { LinkService } from './link.service';
 
 @Controller('link')
 export class LinkController {
   constructor(private readonly linkService: LinkService) {}
 
+  @Get('/config')
+  getConfig() {
+    return this.linkService.getLinkInfoList();
+  }
+
+  /**
+   * 根据配置ID获取模型列表
+   * @param id 配置ID
+   * @returns
+   */
   @Get('/models/')
   getModels(@Query('id') id: string) {
-    console.log('[ id ] >', id);
     return this.linkService.getModels(id);
   }
 
@@ -19,6 +28,11 @@ export class LinkController {
       return CommonException.parameterInvalid('url');
     }
     return this.linkService.saveUrl(id || '', url);
+  }
+
+  @Put('/saveCurrentModel')
+  saveCurrentModel(@Body('id') id: string, @Body('model') model: string) {
+    return this.linkService.saveCurrentModel(id, model);
   }
 
   @Put('/saveApiKey')

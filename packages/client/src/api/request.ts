@@ -1,5 +1,6 @@
-import { CommonResponse } from '@/types/request';
-import axios, { AxiosInstance, AxiosRequestConfig } from 'axios';
+import type { CommonResponse } from '@/types/request';
+import type { AxiosInstance, AxiosRequestConfig } from 'axios';
+import axios from 'axios';
 
 const request = axios.create({
   baseURL: './api',
@@ -8,9 +9,7 @@ const request = axios.create({
 
 request.interceptors.response.use(
   response => {
-    const data = response.data;
-
-    return data;
+    return response.data.data;
   },
   error => {
     console.error(error);

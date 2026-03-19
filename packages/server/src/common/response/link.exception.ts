@@ -11,10 +11,10 @@ export class LinkException extends CommonException {
   }
 
   static linkInfoNotFound() {
-    return new LinkException('链接信息未找到', LinkExceptionEnum.linkInfoNotFound);
+    return new LinkException('Link config not found', LinkExceptionEnum.linkInfoNotFound);
   }
 
   static cannotGetModels() {
-    return new LinkException('无法获取模型列表', LinkExceptionEnum.cannotGetModels);
+    return new LinkException('Failed to load model list', LinkExceptionEnum.cannotGetModels);
   }
 }
