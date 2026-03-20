@@ -6,7 +6,9 @@ import {
   HttpStatus,
   Logger,
 } from '@nestjs/common';
+import { AxiosError } from 'axios';
 import type { Response } from 'express';
+import { CommonException } from '../response/common.response';
 
 @Catch()
 export class HttpExceptionFilter implements ExceptionFilter {
@@ -31,11 +33,20 @@ export class HttpExceptionFilter implements ExceptionFilter {
       });
     }
 
+    if (exception instanceof AxiosError) {
+      const status = exception.response?.status;
+      const payload = CommonException.externalRequestError(status, exception.message).getResponse();
+
+      return response
+        .status(status && status >= 400 && status < 600 ? status : HttpStatus.BAD_GATEWAY)
+        .json(payload);
+    }
+
     this.logger.error(exception instanceof Error ? exception.stack : String(exception));
 
     return response.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
       code: 500,
-      message: '系统异常',
+      message: 'System error',
       data: null,
     });
   }
