@@ -19,7 +19,7 @@ export class LinkService {
   async getModels(id: string) {
     const targetLinkInfo = this.linkConfigService.findLinkInfo(id);
     if (!targetLinkInfo) {
-      return LinkException.linkInfoNotFound();
+      throw LinkException.linkInfoNotFound();
     }
 
     const { url, apiKey } = targetLinkInfo;
@@ -29,7 +29,7 @@ export class LinkService {
       return new CommonSuccess('Model list loaded', mapModels(res.data));
     }
 
-    return LinkException.cannotGetModels();
+    throw LinkException.cannotGetModels();
   }
 
   saveUrl(id: string, url: string) {

@@ -25,7 +25,7 @@ export class LinkController {
   @Put('/saveUrl')
   saveUrl(@Body('url') url: string, @Body('id') id: string) {
     if (!url) {
-      return CommonException.parameterInvalid('url');
+      throw CommonException.parameterInvalid('url');
     }
     return this.linkService.saveUrl(id || '', url);
   }

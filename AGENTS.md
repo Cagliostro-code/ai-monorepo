@@ -25,6 +25,8 @@ Keep new code inside the owning package and colocate module-specific DTOs, style
 
 Prefer TypeScript and ESM throughout the repo. Biome is the workspace formatter, with tabs for indentation and double quotes by default; the server also carries a Prettier config with `tabWidth: 2`, single quotes, trailing commas, and semicolons, so avoid mixing styles inside a file. Follow existing local conventions before reformatting.
 
+Treat the compiler, terminal, and source files as UTF-8 by default. Preserve existing Chinese text in code, comments, logs, and docs when it is the clearest wording, and do not replace Chinese with Unicode escapes or unnecessary English fallbacks unless a specific file is already using that pattern.
+
 Use `PascalCase` for React components and Nest modules, `camelCase` for functions and variables, and kebab-free feature folders such as `src/link` or `src/components/editor`. Prefix intentionally unused variables with `_` to satisfy lint rules.
 
 Add brief comments to new code when the behavior is not obvious, especially around business entry points, key branches, and request/data flow. Prefer concise explanatory comments over line-by-line narration.

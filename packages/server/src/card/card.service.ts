@@ -41,15 +41,15 @@ export class CardService {
     const originalname = file.originalname;
     const filePath = this.dataCardDir + '/' + file.originalname;
     if (fs.existsSync(filePath)) {
-      return CardException.cardExists();
+      throw CardException.cardExists();
     }
     const customData = this.getCardInitData(chunks);
     if (!customData) {
-      return CardException.cardInfoNotFound();
+      throw CardException.cardInfoNotFound();
     }
 
     if (typeof customData !== 'object') {
-      return CardException.cardInfoCannotBeParsed();
+      throw CardException.cardInfoCannotBeParsed();
     }
     this.cardInfo[originalname] = { name: customData.name };
     const tempPath = this.dataCardDir + '.temp';

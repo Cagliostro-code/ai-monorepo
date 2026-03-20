@@ -1,15 +1,22 @@
+import { HttpException, HttpStatus } from '@nestjs/common';
+
 export const CommonExceptionEnum = {
   parameterInvalid: '00001',
   invalidUrl: '00002',
   requestFailed: '00003',
 };
-export class CommonException extends Error {
-  private readonly success: boolean = false;
+export class CommonException extends HttpException {
   code: string;
 
-  constructor(message: string, code: string) {
-    super();
-    this.message = message;
+  constructor(message: string, code: string, status = HttpStatus.BAD_REQUEST) {
+    super(
+      {
+        code,
+        message,
+        data: null,
+      },
+      status,
+    );
     this.code = code;
   }
 
